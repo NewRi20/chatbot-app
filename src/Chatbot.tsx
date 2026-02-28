@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import vhaLogo from './assets/vhaLogo.png';
 import './Chatbot.css';
 
 // Initialize API
@@ -116,9 +117,9 @@ const Chatbot: React.FC = () => {
   return (
     <div className="chatbot-container">
       <div className="chatbot-header">
-        <div className="avatar">VH</div>
+        <img src={vhaLogo} alt="vha" className="header-logo" />
         <div className="header-info">
-          <h2>Valley High Assistant</h2>
+          <h2>Valley High Academy Assistant</h2>
           <span className="status">Online</span>
         </div>
       </div>

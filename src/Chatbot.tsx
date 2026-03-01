@@ -1,30 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import vhaLogo from './assets/vhaLogo.png';
+import { SYSTEM_INSTRUCTION } from './chatbotConfig';
 import './Chatbot.css';
 
 // Initialize API
 const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
 const genAI = new GoogleGenerativeAI(API_KEY);
-
-const SYSTEM_INSTRUCTION = `You are a helpful and friendly chatbot assistant for Valley High Academy, a senior high school.
-Your goal is to answer questions from students, parents, and visitors about the school.
-
-Here is some general information about Valley High Academy to help you answer questions:
-- **Name:** Valley High Academy
-- **Motto:** "Excellence in Every Step"
-- **Location:** 123 Education Lane, Valley City
-- **Principal:** Dr. Sarah Mitchell
-- **Established:** 1985
-- **Tracks Offered:**
-  - **Academic Track:** STEM (Science, Technology, Engineering, Mathematics), ABM (Accountancy, Business, and Management), HUMSS (Humanities and Social Sciences), GAS (General Academic Strand)
-  - **TVL Track:** ICT (Information and Communications Technology), Home Economics
-- **Facilities:** Modern Library, Science Labs, Computer Labs, Gymnasium, Cafeteria, Football Field.
-- **School Hours:** Monday to Friday, 7:30 AM - 4:00 PM.
-- **Contact:** (555) 123-4567 | info@valleyhigh.edu
-
-If a user asks a question you don't have the specific answer to based on this context, politely explain that you are a demo bot and might not have real-time data, but suggest they contact the school office.
-Always be polite, encouraging, and school-appropriate.`;
 
 interface Message {
   id: string;
@@ -70,6 +52,10 @@ const Chatbot: React.FC = () => {
     setIsLoading(true);
 
     try {
+      if (!API_KEY) {
+        throw new Error("API Key is missing. Please check your .env file.");
+      }
+
       // Prepare history for API
       // The API expects history in specific format
       // Note: We filter out the very first welcome message if it's purely UI-based and not part of conversation flow, 
@@ -80,7 +66,7 @@ const Chatbot: React.FC = () => {
       }));
 
       const model = genAI.getGenerativeModel({ 
-        model: "gemini-1.5-flash",
+        model: "gemini-2.5-flash",
         systemInstruction: SYSTEM_INSTRUCTION
       });
 
@@ -102,9 +88,15 @@ const Chatbot: React.FC = () => {
       setMessages(prev => [...prev, botMessage]);
     } catch (error) {
       console.error("Error sending message:", error);
+      let errorText = "I'm sorry, I encountered an error. Please simulate checking your API key or try again later.";
+      
+      if (error instanceof Error) {
+        errorText += ` (Details: ${error.message})`;
+      }
+
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: "I'm sorry, I encountered an error. Please simulate checking your API key or try again later.",
+        text: errorText,
         sender: 'bot',
         timestamp: new Date()
       };

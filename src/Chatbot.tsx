@@ -112,7 +112,7 @@ const Chatbot: React.FC = () => {
       <div className="chatbot-header">
         <img src={vhaLogo} alt="vha" className="header-logo" />
         <div className="header-info">
-          <h2>Valley High Academy Assistant</h2>
+          <h2>Valley High Academy AI Assistant</h2>
           <span className="status">Online</span>
         </div>
       </div>

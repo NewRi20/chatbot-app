@@ -3,6 +3,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import vhaLogo from './assets/vhaLogo.png';
 import { SYSTEM_INSTRUCTION } from './chatbotConfig';
 import './Chatbot.css';
+import ReactMarkdown from 'react-markdown';
 
 // Initialize API
 const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
@@ -111,7 +112,7 @@ const Chatbot: React.FC = () => {
       <div className="chatbot-header">
         <img src={vhaLogo} alt="vha" className="header-logo" />
         <div className="header-info">
-          <h2>Valley High Academy Assistant</h2>
+          <h2>Valley High Academy AI Assistant</h2>
           <span className="status">Online</span>
         </div>
       </div>
@@ -123,7 +124,7 @@ const Chatbot: React.FC = () => {
             className={`message ${msg.sender === 'user' ? 'message-user' : 'message-bot'}`}
           >
             <div className="message-content">
-              {msg.text}
+              <ReactMarkdown>{msg.text}</ReactMarkdown>
             </div>
             <div className="message-time">
               {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}

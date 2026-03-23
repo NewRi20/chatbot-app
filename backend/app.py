@@ -9,6 +9,15 @@ genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
 app = FastAPI()
 
+# Need to have CORS for
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=["https://your-vercel-link.vercel.app"], # Your React URL
+#     allow_credentials=True,
+#     allow_methods=["*"], # Allow GET, POST, etc.
+#     allow_headers=["*"], # Allow all headers
+# )
+
 class ChatRequest(BaseModel):
     message: str
 

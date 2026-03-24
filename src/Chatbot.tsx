@@ -1,13 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { GoogleGenerativeAI } from "@google/generative-ai";
+// Removed direct GoogleGenerativeAI usage as we are using the backend endpoint
 import vhaLogo from './assets/vhaLogo.png';
-import { SYSTEM_INSTRUCTION } from './chatbotConfig';
+// import { SYSTEM_INSTRUCTION } from './chatbotConfig'; // Moved to backend if needed
 import './Chatbot.css';
 import ReactMarkdown from 'react-markdown';
 
-// Initialize API
-const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
-const genAI = new GoogleGenerativeAI(API_KEY);
+// API URL - Adjust if your backend is on a different port/host
+const API_URL = "http://localhost:8000/chat";
 
 interface Message {
   id: string;
@@ -33,13 +32,13 @@ const Chatbot: React.FC = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  useEffect(() => {
+  useEffect(() => { 
     scrollToBottom();
   }, [messages]);
 
   const handleSendMessage = async (e?: React.FormEvent) => {
     e?.preventDefault();
-    if (!input.trim() || !API_KEY) return;
+    if (!input.trim()) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -53,35 +52,23 @@ const Chatbot: React.FC = () => {
     setIsLoading(true);
 
     try {
-      if (!API_KEY) {
-        throw new Error("API Key is missing. Please check your .env file.");
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ message: input }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      // Prepare history for API
-      // The API expects history in specific format
-      // Note: We filter out the very first welcome message if it's purely UI-based and not part of conversation flow, 
-      // but keeping it simple here.
-      const history = messages.slice(1).map(msg => ({
-        role: msg.sender === 'user' ? 'user' : 'model',
-        parts: [{ text: msg.text }]
-      }));
-
-      const model = genAI.getGenerativeModel({ 
-        model: "gemini-2.5-flash",
-        systemInstruction: SYSTEM_INSTRUCTION
-      });
-
-      const chat = model.startChat({
-        history: history as any, // Type assertion for compatibility
-      });
-
-      const result = await chat.sendMessage(userMessage.text);
-      const response = await result.response;
-      const botResponseText = response.text();
-
+      const data = await response.json();
+      
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: botResponseText,
+        text: data.reply,
         sender: 'bot',
         timestamp: new Date()
       };
@@ -89,7 +76,7 @@ const Chatbot: React.FC = () => {
       setMessages(prev => [...prev, botMessage]);
     } catch (error) {
       console.error("Error sending message:", error);
-      let errorText = "I'm sorry, I encountered an error. Please simulate checking your API key or try again later.";
+      let errorText = "I'm sorry, I encountered an error connecting to the server.";
       
       if (error instanceof Error) {
         errorText += ` (Details: ${error.message})`;
@@ -157,11 +144,6 @@ const Chatbot: React.FC = () => {
           </svg>
         </button>
       </form>
-      {!API_KEY && (
-        <div className="api-key-warning">
-          Warning: VITE_GOOGLE_API_KEY is missing in .env file
-        </div>
-      )}
     </div>
   );
 };

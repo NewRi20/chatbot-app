@@ -7,8 +7,7 @@ app = FastAPI()
 app.include_router(chat.router)
 
 origins = [
-    "http://localhost.tiangolo.com",
-    "https://localhost.tiangolo.com",
+    "http://localhost:5173",
     "http://localhost",
     "http://localhost:8080",
 ]

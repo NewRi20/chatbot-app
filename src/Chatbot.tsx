@@ -6,7 +6,7 @@ import './Chatbot.css';
 import ReactMarkdown from 'react-markdown';
 
 // API URL - Adjust if your backend is on a different port/host
-const API_URL = "http://localhost:8000/api/chat";
+const API_URL = "http://localhost:8000/chat";
 
 interface Message {
   id: string;

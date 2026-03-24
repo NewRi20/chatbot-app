@@ -6,7 +6,7 @@ import './Chatbot.css';
 import ReactMarkdown from 'react-markdown';
 
 // API URL - Adjust if your backend is on a different port/host
-const API_URL = "http://localhost:8000/chat";
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 interface Message {
   id: string;
@@ -52,7 +52,7 @@ const Chatbot: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch(API_URL, {
+      const response = await fetch(`${API_URL}/chat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

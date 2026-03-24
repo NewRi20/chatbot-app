@@ -9,16 +9,16 @@ app.include_router(chat.router)
 origins = [
     "http://localhost:5173",
     "http://localhost",
-    "http://localhost:8080",
+    "https://vha-aichatbot.vercel.app"
 ]
 
 # Need to have CORS for
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins, # Your React URL
+    allow_origins=origins, 
     allow_credentials=True,
-    allow_methods=["*"], # Allow GET, POST, etc.
-    allow_headers=["*"], # Allow all headers
+    allow_methods=["*"], 
+    allow_headers=["*"], 
 )
 
 @app.get("/")
